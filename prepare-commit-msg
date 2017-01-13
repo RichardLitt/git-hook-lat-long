@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# An example hook script to prepare the commit log message.
+# Called by "git commit" with the name of the file that has the
+# commit message, followed by the description of the commit
+# message's source.  The hook's purpose is to edit the commit
+# message file.  If the hook fails with a non-zero status,
+# the commit is aborted.
+#
+# This hook adds the current latlong coordinates and adds them
+# the commit message.
+
+LOCATION=$(wifi-triangulate | grep -ohE '([0-9\.\-]+)' | head -n2 | paste -s -d"," -)
+if [[ ! -z $LOCATION ]]; then
+  grep -qs "^Coordinates: " "$1" || sed -i '' '2s/^/\
+Coordinates: '"$LOCATION"'\
+/' "$1"
+fi
